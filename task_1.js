@@ -1,33 +1,83 @@
-const isValidPositiveInteger = (str1, str2) => /^\d+$/.test(str1.trim()) && /^\d+$/.test(str2.trim());
+const isValidPositiveInteger = (str1, str2) => /^[1-9]\d*$/.test(str1) && /^[1-9]\d*$/.test(str2);
 
 const performOperation = (operation, a, b) => {
-    if (!isValidPositiveInteger(a, b)) {
-        throw new Error('Both strings must contain only positive integers');
-    }
-
-    const numA = parseInt(a.trim(), 10);
-    const numB = parseInt(b.trim(), 10);
-
-    if (operation === 'minus' && numA <= numB) {
-        throw new Error('First number should be greater than second');
-    }
-
-    if (operation === 'divide' && numA % numB !== 0) {
-        throw new Error('Result must be an integer value');
-    }
+    if (!isValidPositiveInteger(a, b)) throw new Error('Both strings must contain only positive integers');
+    const [numA, numB] = [a, b].map(Number);
+    
+    if (operation === 'minus' && numA <= numB) throw new Error('First number should be greater than second');
+    if (operation === 'divide' && numA % numB !== 0) throw new Error('Result must be an integer value');
+    
+    const [aArray, bArray] = [a, b].map(str => str.split('').reverse().map(Number));
+    let tempArray = [];
+    let helper = 0;
 
     switch (operation) {
         case 'plus':
-            return numA + numB;
+            tempArray = aArray.reduce((acc, digit, i) => {
+                const sum = (digit || 0) + (bArray[i] || 0) + helper;
+                helper = sum > 9 ? 1 : 0;
+                acc.unshift(sum % 10);
+                return acc;
+            }, []);
+
+            break;
+        
         case 'minus':
-            return numA - numB;
+            tempArray = aArray.reduce((acc, digit, i) => {
+                let diff = (digit || 0) - (bArray[i] || 0) - helper;
+                helper = diff < 0 ? 1 : 0;
+                diff = helper ? diff + 10 : diff;
+                acc.unshift(diff);
+                return acc;
+            }, []);
+
+            break;
+
         case 'divide':
-            return numA / numB;
+            const dividendArray = a.split('').map(Number);
+                const divisor = parseInt(b);
+            
+                if (divisor === 0) {
+                    throw new Error("Division by zero is not allowed.");
+                }
+            
+                let quotientArray = [];
+                let remainder = 0;
+            
+                for (let i = 0; i < dividendArray.length; i++) {
+                    let digit = remainder * 10 + dividendArray[i];
+                    let quotientDigit = Math.floor(digit / divisor); digit
+                    remainder = digit % divisor;
+                    quotientArray.push(quotientDigit); 
+                }
+            
+                while (quotientArray.length > 1 && quotientArray[0] === 0) {
+                    quotientArray.shift();
+                }
+            
+                return quotientArray.join('');
+        
+            break;
+
         case 'multiply':
-            return numA * numB;
+            const productArray = new Array(a.length + b.length).fill(0);
+            aArray.forEach((digitA, i) => {
+                bArray.forEach((digitB, j) => {
+                    const product = digitA * digitB;
+                    const sum = productArray[i + j] + product;
+                    productArray[i + j] = sum % 10;
+                    productArray[i + j + 1] += (sum / 10) | 0;
+                });
+            });
+            tempArray = productArray.reverse();
+
+            break;
+
         default:
             throw new Error('Unsupported operation');
     }
+
+    return tempArray.join('').replace(/^0+/, '');
 };
 
 // String.plus(string):
