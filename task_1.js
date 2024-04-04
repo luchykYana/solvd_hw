@@ -5,7 +5,6 @@ const performOperation = (operation, a, b) => {
     const [numA, numB] = [a, b].map(Number);
     
     if (operation === 'minus' && numA <= numB) throw new Error('First number should be greater than second');
-    if (operation === 'divide' && numA % numB !== 0) throw new Error('Result must be an integer value');
     
     const [aArray, bArray] = [a, b].map(str => str.split('').reverse().map(Number));
     let tempArray = [];
@@ -56,8 +55,6 @@ const performOperation = (operation, a, b) => {
                 }
             
                 return quotientArray.join('');
-        
-            break;
 
         case 'multiply':
             const productArray = new Array(a.length + b.length).fill(0);
@@ -108,10 +105,12 @@ String.prototype.multiply = function(str) {
 };
 
 try {
-    console.log('10'.plus('9'));
-    console.log('10'.minus('5'));
-    console.log('10'.divide('5'));
-    console.log('10'.multiply('5'));
+    const s1 = '44444444444444444444444444444444000000000000000000000';
+    const s2 = '2000000000000';
+    console.log(s1.plus(s2));
+    console.log(s1.minus(s2));
+    console.log(s1.multiply(s2));
+    console.log(s1.divide(s2));
 
     // Test for errors
     // console.log('abc'.plus('5'));
